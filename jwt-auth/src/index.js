@@ -6,13 +6,14 @@ const { verify } = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
 const { hash, compare } = require('bcryptjs');
 const { fakeDB } = require('./fakeDB');
-const PORT = process.env.PORT;
+const { isAuth } = require('./isAuth');
 const {
   createAccessToken,
   createRefreshToken,
   sendAccessToken,
   sendRefreshToken,
 } = require('./tokens');
+const PORT = process.env.PORT;
 
 // 1. register user
 // 2. login user
@@ -84,6 +85,22 @@ server.post('/login', async (req, res) => {
 server.post('/logout', (req, res) => {
   res.clearCookie('refreshtoken');
   return res.json({ message: 'Logged out' });
+});
+
+// 4. protected route
+server.post('/protected', (req, res) => {
+  try {
+    const userId = isAuth(req);
+    if (userId !== null) {
+      res.json({
+        data: 'This is protected data',
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      error: `${err.message}`,
+    });
+  }
 });
 
 // run server
