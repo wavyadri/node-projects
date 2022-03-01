@@ -80,6 +80,12 @@ server.post('/login', async (req, res) => {
   }
 });
 
+// 3. logout user
+server.post('/logout', (req, res) => {
+  res.clearCookie('refreshtoken');
+  return res.json({ message: 'Logged out' });
+});
+
 // run server
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
